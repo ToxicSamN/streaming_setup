@@ -109,6 +109,7 @@ sudo cp /boot/key /u01/prd/rsa
 sudo cp /boot/enc_secret /u01/prd/rsa
 sudo cp $SCRIPTPATH/rsa/* /u01/prd/rsa/
 sudo cp $SCRIPTPATH/autogen_tvpw.py /u01/prd/python/
+sudo cp $SCRIPTPATH/git_update.py /u01/prd/python/
 sudo chown -R pi:root /u01
 tree /u01
 
@@ -185,6 +186,7 @@ python3 /u01/prd/python/autogen_tvpw.py
 echo 
 echo "Setting up CRON job for Teamviewer PW creation"
 (crontab -l; echo "0 0 1 * * python3 /u01/prd/python/autogen_tvpw.py") | crontab -
+(crontab -l; echo "0 0-23 * * * python3 /u01/prd/python/git_update.py") | crontab -
 
 echo "Installing the LCD Screen Components"
 /u01/prd/lcd/lcd35_install/install_lcd35
