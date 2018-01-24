@@ -178,7 +178,7 @@ sudo sed -i 's/raspberrypi/'"$StreamMP"'-stream/' /etc/hosts
 echo
 
 echo "Auto-Generating Teamviewer Passwd"
-python3 /u01/prd/python/autogen_tvow.py
+python3 /u01/prd/python/autogen_tvpw.py
 
 echo 
 echo "Setting up CRON job for Teamviewer PW creation"
