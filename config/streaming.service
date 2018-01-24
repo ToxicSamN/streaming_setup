@@ -1,0 +1,10 @@
+[Unit]
+Description=Live Audio Streaming Service
+After=icecast2.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/darkice -c /u01/prd/streaming/cfg/darkice/darkice.conf
+
+[Install]
+WantedBy=multi-user.target
