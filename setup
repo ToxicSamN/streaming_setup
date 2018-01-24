@@ -61,11 +61,6 @@ sudo apt-get install -y darkice mutt
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y icecast2
 sudo apt install -y $SCRIPTPATH/teamviewer-host_13.0.5641_armhf.deb
 
-echo
-
-echo "Loading Raspberry Pi Configuration Tool"
-
-echo
 
 echo "export LC_ALL=en_US.UTF-8" | sudo tee --append ~/.bashrc
 sudo ln -fs /usr/share/zoneinfo/US/Central /etc/localtime
@@ -113,6 +108,7 @@ sudo touch /u01/prd/tmp/.mutt/certificates
 sudo cp /boot/key /u01/prd/rsa
 sudo cp /boot/enc_secret /u01/prd/rsa
 sudo cp $SCRIPTPATH/rsa/* /u01/prd/rsa/
+sudo cp $SCRIPTPATH/autogen_tvpw.py /u01/prd/python/
 sudo chown -R pi:root /u01
 tree /u01
 
@@ -172,7 +168,14 @@ echo "Setting file/folder ownerships"
 sudo chown -R pi:root /u01/prd/streaming
 sudo chown -R icecast2:icecast /u01/prd/streaming/cfg/icecast
 
+echo
+echo "Changing hostname"
 sudo hostnamectl set-hostname "$StreamMP-stream"
+sudo sed -i 's/raspberrypi/'"$StreamMP"'-stream/' /etc/hosts
+
+echo
+
+echo "Auto-Generating Teamviewer Passwd"
 python3 /u01/prd/python/autogen_tvow.py
 
 echo 
@@ -180,5 +183,9 @@ echo "Setting up CRON job for Teamviewer PW creation"
 (crontab -l; echo "0 0 1 * * python3 /u01/prd/python/autogen_tvpw.py") | crontab -
 
 echo "Installing the LCD Screen Components"
-/u01/prd/lcd/lcd35_install/install_lcd35 # this will cause an auto-reboot which signal the end of the setup
+/u01/prd/lcd/lcd35_install/install_lcd35
 
+echo
+
+echo "Dealing with teamviewer EULA until reboot"
+echo "y" | sudo teamviewer setup >> /dev/null

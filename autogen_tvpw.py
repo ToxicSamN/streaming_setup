@@ -65,14 +65,14 @@ if __name__ == '__main__':
     with open('/u01/prd/tmp/muttrc', 'w') as f:
         f.write(mutt_config)
         f.close()
-    subprocess.Popen("teamviewer info > /u01/prd/tmp/tvinfo", shell=True,
+    subprocess.Popen("sudo teamviewer info > /u01/prd/tmp/tvinfo", shell=True,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     subject = "[TeamViewer-Autogen-Passwd]{}-{}".format(gethostname(), datetime.now().ctime())
     cli_args = 'echo "" | mutt -F /u01/prd/tmp/muttrc -s "{}" -i /u01/prd/tmp/tvinfo -a ' \
                '/u01/prd/tmp/newpw -- "{}"'.format(subject, to_addr)
     subprocess.Popen(cli_args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-    subprocess.Popen("teamviewer passwd {}".format(pw_gen.get_decrypted()), shell=True,
+    subprocess.Popen("sudo teamviewer passwd {}".format(pw_gen.get_decrypted()), shell=True,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     enc = None
     pw_gen = None
