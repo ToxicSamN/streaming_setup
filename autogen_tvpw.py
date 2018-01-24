@@ -66,8 +66,10 @@ if __name__ == '__main__':
     with open('/u01/prd/tmp/muttrc', 'w') as f:
         f.write(mutt_config)
         f.close()
-    subprocess.Popen("sudo teamviewer info > /u01/prd/tmp/tvinfo", shell=True,
-                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    subprocess.Popen('teamviewer info | grep "TeamViewer ID" > /u01/prd/tmp/tvinfo',
+                     shell=True,
+                     stdout=subprocess.PIPE,
+                     stderr=subprocess.PIPE)
     subject = "[TeamViewer-Autogen-Passwd]{}-{}".format(gethostname(), datetime.now().ctime())
     cli_args = 'echo "" | mutt -F /u01/prd/tmp/muttrc -s "{}" -i /u01/prd/tmp/tvinfo -a ' \
                '/u01/prd/tmp/newpw -- "{}"'.format(subject, to_addr)
@@ -75,11 +77,12 @@ if __name__ == '__main__':
 
     subprocess.Popen("sudo teamviewer passwd {}".format(pw_gen.get_decrypted()), shell=True,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    enc = None
-    pw_gen = None
 
     # give the email time to send before clearing out the config file
     time.sleep(5)
+
+    enc = None
+    pw_gen = None
 
     # clear the file that is holding passwords
     with open('/u01/prd/tmp/muttrc', 'w') as f:
