@@ -125,7 +125,6 @@ echo
 
 echo "Configuring the streaming services"
 sudo cp $SCRIPTPATH/config/streaming.service /etc/systemd/system
-sudo cp $SCRIPTPATH/config/alsastate.service /etc/systemd/system
 sudo cp $SCRIPTPATH/config/asound.state /u01/prd/streaming/
 sudo cp $SCRIPTPATH/config/passwdgen.service /etc/systemd/system
 sudo cp $SCRIPTPATH/config/icecast.xml /u01/prd/streaming/cfg/icecast/icecast.xml
@@ -133,6 +132,7 @@ sudo cp $SCRIPTPATH/config/darkice.conf /u01/prd/streaming/cfg/darkice/darkice.c
 sudo cp $SCRIPTPATH/config/vumeter.conf /u01/prd/streaming/cfg/vumeter/vumeter.conf
 sudo cp $SCRIPTPATH/config/icecast2 /etc/default/
 sudo cp $SCRIPTPATH/config/streaming-vu-meter.desktop /usr/share/applications/streaming-vu-meter.desktop
+sudo cp $SCRIPTPATH/config/alsastate.desktop /usr/share/applications/alsastate.desktop
 cp $SCRIPTPATH/config/panel.new /home/pi/.config/lxpanel/LXDE-pi/panels/panel
 cp $SCRIPTPATH/config/autostart /home/pi/.config/lxsession/LXDE-pi/autostart
 sudo cp /usr/share/applications/streaming-vu-meter.desktop /home/pi/Desktop/
