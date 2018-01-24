@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Streaming VU Meter
+Comment=Streaming VU Meter to display audio levels
+Exec=/usr/bin/python3 /u01/prd/python/StreamingVUMeter/streaming_meter.py
+Icon=/usr/share/pixmaps/htop.png
+Terminal=false
+Type=Application
+Categories=Application;Streaming
+StartupNotify=true
