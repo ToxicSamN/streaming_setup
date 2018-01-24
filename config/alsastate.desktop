@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Terminal=false
+Name=alsarestore
+Exec=alsactl --file /u01/prd/streaming/asound.state restore

@@ -125,6 +125,8 @@ echo
 
 echo "Configuring the streaming services"
 sudo cp $SCRIPTPATH/config/streaming.service /etc/systemd/system
+sudo cp $SCRIPTPATH/config/alsastate.service /etc/systemd/system
+sudo cp $SCRIPTPATH/config/asound.state /u01/prd/streaming/
 sudo cp $SCRIPTPATH/config/passwdgen.service /etc/systemd/system
 sudo cp $SCRIPTPATH/config/icecast.xml /u01/prd/streaming/cfg/icecast/icecast.xml
 sudo cp $SCRIPTPATH/config/darkice.conf /u01/prd/streaming/cfg/darkice/darkice.conf
