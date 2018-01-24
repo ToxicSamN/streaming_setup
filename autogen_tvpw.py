@@ -4,6 +4,7 @@
 import os
 import argparse
 import subprocess
+import time
 from datetime import datetime
 from socket import gethostname
 from pycrypt.encryption import Encryption
@@ -77,6 +78,10 @@ if __name__ == '__main__':
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     enc = None
     pw_gen = None
+
+    # give the email time to send before clearing out the config file
+    time.sleep(5)
+
     # clear the file that is holding passwords
     with open('/u01/prd/tmp/muttrc', 'w') as f:
         f.write('')
