@@ -13,9 +13,10 @@ from pycrypt.PasswdGenerator import PasswordGenerator
 
 if __name__ == '__main__':
 
-    pw_exclude = ["'", '\\', '/', '"', '^', '&', '*', '(', ')',
+    pw_exclude = ["'", '"', '\\', '/', '^', '&', '*', '(', ')',
                   '[', ']', '{', '}', '=', '+', '~', '`', '<',
-                  '>', '?', ';', ':', '|', ',']
+                  '>', '?', ';', ':', '|', ',', '.', '!', '@',
+                  '#', '$', '%', '-', '_']
 
     enc = Encryption()
     pw_gen = PasswordGenerator()
