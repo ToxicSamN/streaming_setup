@@ -63,7 +63,7 @@ sudo apt-get install -y python3-dev python3-numpy
 sudo apt-get install -y mercurial git
 sudo apt-get install -y mplayer vim # possibly using mpg321
 sudo apt-get install -y darkice mutt
-sudo apt-get install exfat-fuse exfat-utils rsync gdisk
+sudo apt-get install -y exfat-fuse exfat-utils rsync gdisk
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y icecast2
 sudo apt install -y $SCRIPTPATH/teamviewer-host_13.0.5641_armhf.deb
 sudo apt-get clean -y
