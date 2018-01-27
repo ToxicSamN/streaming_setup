@@ -49,6 +49,11 @@ select uin in "KGRO" "KOMX" "KDRL"; do
     esac
 done
 
+
+sudo apt-get remove --purge libreoffice* -y
+sudo apt-get purge wolfram-engine -y
+sudo apt-get clean -y
+sudo apt-get autoremove -y
 sudo apt update -y
 sudo apt upgrade -y
 sudo apt-get --no-install-recommends install -y build-essential devscripts autotools-dev fakeroot dpkg-dev debhelper autotools-dev dh-make quilt ccache libsamplerate0-dev libpulse-dev libaudio-dev lame libjack-jackd2-dev libasound2-dev libtwolame-dev libfaad-dev libflac-dev libmp4v2-dev libshout3-dev libmp3lame-dev
@@ -60,10 +65,6 @@ sudo apt-get install -y mplayer vim # possibly using mpg321
 sudo apt-get install -y darkice mutt rsync gdisk
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y icecast2
 sudo apt install -y $SCRIPTPATH/teamviewer-host_13.0.5641_armhf.deb
-sudo apt-get remove --purge libreoffice*
-sudo apt-get purge wolfram-engine
-sudo apt-get clean
-sudo apt-get autoremove
 
 
 echo "export LC_ALL=en_US.UTF-8" | sudo tee --append ~/.bashrc
