@@ -134,6 +134,8 @@ echo
 
 echo "Configuring the streaming services"
 sudo cp $SCRIPTPATH/config/streaming.service /etc/systemd/system
+sudo cp $SCRIPTPATH/config/firstboot.service /etc/systemd/system
+sudo cp $SCRIPTPATH/config/firstboot_once.sh /etc/init.d/firstboot_once.sh
 sudo cp $SCRIPTPATH/config/asound.state /u01/prd/streaming/
 sudo cp $SCRIPTPATH/config/passwdgen.service /etc/systemd/system
 sudo cp $SCRIPTPATH/config/icecast.xml /u01/prd/streaming/cfg/icecast/icecast.xml
