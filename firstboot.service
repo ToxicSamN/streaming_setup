@@ -5,10 +5,8 @@ After=multi-user.target network-online.target
 
 [Service]
 Type=simple
-ExecStart=/u01/git_repo/ucgmetrics_scripts/metrics_collection/services/get_vmmetrics.sh
-Restart=always
-RestartSec=10s
+ExecStart=/etc/init.d/firstboot_once.sh
 
 [Install]
-WantedBy=startuplast.target
+WantedBy=multi-user.target
 
