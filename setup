@@ -154,6 +154,7 @@ sudo systemctl enable icecast2.service
 sudo systemctl start icecast2.service
 sudo systemctl enable streaming.service
 sudo systemctl start streaming.service
+sudo chmod +x /etc/init.d/firstboot_once.sh
 
 echo
 
