@@ -117,6 +117,7 @@ sudo cp /boot/key /u01/prd/rsa
 sudo cp /boot/enc_secret /u01/prd/rsa
 sudo cp $SCRIPTPATH/rsa/* /u01/prd/rsa/
 sudo cp $SCRIPTPATH/autogen_tvpw.py /u01/prd/python/
+sudo cp $SCRIPTPATH/autogen_pw.py /u01/prd/python/
 sudo cp $SCRIPTPATH/git_update.py /u01/prd/python/
 sudo chown -R pi:root /u01
 tree /u01
