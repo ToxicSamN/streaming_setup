@@ -4,52 +4,108 @@ SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 cd $SCRIPTPATH
 
-# function for generating a random 31 digit password
 randpw(){ 
-	< /dev/urandom tr -dc '_A-Z-a-z-0-9' | head -c${1:-32};
-	echo;
-}
-randpwtv(){ 
-	< /dev/urandom tr -dc '_!@#$%A-Z-a-z-0-9' | head -c${1:-12};
+	< /dev/urandom tr -dc '_A-Z-a-z-0-9' | tail -n +1 | head -c${1:-32};
 	echo;
 }
 
-echo
+usage(){
+	s_desc="Radio station ID (KGRO, KOMX, KDRL)"
+	m_desc="Designate if this Raspberry Pi should be the master streaming server"
+	h_desc="\t\tprovide usage information."
+	printf "Usage: \n  $0 [OPTIONS]\n\nOPTIONS:\n"
+	printf "  -n | --no-reboot)\t$n_desc\n  -p | --preserve-boot-cmdline\t$p_desc\n  -h | --help\t$h_desc\n\n\n"
+	exit 1
+}
 
-echo "Which Radio Station do you wish to configure?"
-select uin in "KGRO" "KOMX" "KDRL"; do
-    case $uin in
-        KGRO ) StationID="KGRO"; 
+RID=""
+MASTER="FALSE"
+DUAL="FALSE"
+
+while : 
+do
+	case "$1" in 
+		-s | --station-id)	
+			shift
+			RID="$1"
+			;;
+		-m | --master)	
+			shift
+			MASTER="TRUE"
+			;;
+		-h | --help)	
+			shift
+			usage
+			;;
+		--) # end of all options
+			shift
+			break
+			;;
+		-*) # unknown option
+			echo "Error: Unknown Parameter: $1" >&2
+			exit 99
+			;;
+		* )	# no more options
+			break
+			;;
+	esac
+	shift
+done
+RID=${RID,,}
+if [[ "$RID" = "kgro" || "$RID" = "komx" || "$RID" = "kdrl" || "$MASTER" = "TRUE" ]]; then
+	
+	if [[ "$MASTER" = "TRUE" && ( "$RID" = "kgro" || "$RID" = "komx" || "$RID" = "kdrl" ) ]]; then
+		# a station streaming pi is also the master
+		StationID=${RID^^}
+		StreamDescription=$(echo "$StationID Radio")
+		StreamName=$(echo "$StationID Broadcast")
+		StreamMP=$RID
+		# rlyPswd=$(randpw)
+		DUAL="TRUE"
+		
+	elif [[ "$MASTER" = "TRUE" && ! ( "$RID" = "kgro" || "$RID" = "komx" || "$RID" = "kdrl" ) ]]; then
+		# Master only pi
+		StationID=""
+	    StreamDescription=""
+	    StreamName=""
+	    StreamMP=""
+	    StreamPort="80"
+	    # rlyPswd=$(randpw)
+	else
+		StationID=${RID^^}
+		StreamDescription=$(echo "$StationID Radio")
+		StreamName=$(echo "$StationID Broadcast")
+		StreamMP=$RID
+		# rlyPswd=$(randpw)
+	
+else
+	usage
+	echo "Which Radio Station do you wish to configure?"
+	select uin in "KGRO" "KOMX" "KDRL" "MASTER"; do
+		case $uin in
+			KGRO ) StationID="KGRO"; 
 			   StreamDescription="KGRO Radio"; 
 			   StreamName="KGRO Broadcast";
 			   StreamMP="kgro";
-			   StreamPort="8000";
-			   srcPswd=$(randpw);
-			   adminPswd=$(randpw);
-			   rlyPswd=$(randpw);
 			   break;;
-        KOMX ) StationID="KOMX";
+			KOMX ) StationID="KOMX";
 			   StreamDescription="KOMX Radio"; 
 			   StreamName="KOMX Broadcast";
 			   StreamMP="komx";
-			   StreamPort="8001";
-			   srcPswd=$(randpw);
-			   adminPswd=$(randpw);
-			   rlyPswd=$(randpw);
 			   break;;
-		KDRL ) StationID="KDRL";
+			KDRL ) StationID="KDRL";
 			   StreamDescription="KDRL Radio"; 
 			   StreamName="KDRL Broadcast";
 			   StreamMP="kdrl";
-			   StreamPort="8002";
-			   srcPswd=$(randpw);
-			   adminPswd=$(randpw);
-			   rlyPswd=$(randpw);
 			   break;;
-    esac
-done
-
-
+			MASTER ) StationID="";
+			   StreamDescription=""; 
+			   StreamName="";
+			   StreamMP="";
+			   break;;
+		esac
+	done
+	
 sudo apt-get remove --purge libreoffice* -y
 sudo apt-get purge wolfram-engine -y
 sudo apt-get clean -y
@@ -57,22 +113,21 @@ sudo apt-get autoremove -y
 sudo apt update -y
 sudo apt upgrade -y
 sudo apt-get --no-install-recommends install -y build-essential devscripts autotools-dev fakeroot dpkg-dev debhelper autotools-dev dh-make quilt ccache libsamplerate0-dev libpulse-dev libaudio-dev lame libjack-jackd2-dev libasound2-dev libtwolame-dev libfaad-dev libflac-dev libmp4v2-dev libshout3-dev libmp3lame-dev
-sudo apt-get install -y libsdl-dev libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev 
+sudo apt-get install -y libsdl-dev libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev
 sudo apt-get install -y libsmpeg-dev libportmidi-dev libavformat-dev libswscale-dev
 sudo apt-get install -y python3-dev python3-numpy
 sudo apt-get install -y mercurial git
 sudo apt-get install -y mplayer vim # possibly using mpg321
 sudo apt-get install -y darkice mutt
 sudo apt-get install -y exfat-fuse exfat-utils rsync gdisk
+sudo apt-get install -y lsb lsb-core, htop
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y icecast2
-sudo apt install -y $SCRIPTPATH/teamviewer-host_13.0.5641_armhf.deb
+sudo apt install -y $SCRIPTPATH/teamviewer-host_14.1.9025_armhf.deb
+sudo apt install -y $SCRIPTPATH/logmein-hamachi_2.1.0.198-1_armhf.deb
 sudo apt-get clean -y
 sudo apt-get autoremove -y
 
-
-echo "export LC_ALL=en_US.UTF-8" | sudo tee --append ~/.bashrc
-sudo ln -fs /usr/share/zoneinfo/US/Central /etc/localtime
-sudo dpkg-reconfigure -f noninteractive tzdata
+sudo timedatectl set-timezone "America/Chicago"
  
 echo
 echo "Setting up Python PyGame"
@@ -113,20 +168,23 @@ sudo mkdir -p /u01/prd/tmp
 sudo mkdir -p /u01/prd/tmp/.mutt/cache/headers
 sudo mkdir /u01/prd/tmp/.mutt/cache/bodies
 sudo touch /u01/prd/tmp/.mutt/certificates
-sudo cp /boot/key /u01/prd/rsa
-sudo cp /boot/enc_secret /u01/prd/rsa
+sudo cp /boot/key /u01/prd/rsa/
+sudo cp /boot/enc_secret /u01/prd/rsa/
 sudo cp $SCRIPTPATH/rsa/* /u01/prd/rsa/
 sudo cp $SCRIPTPATH/autogen_tvpw.py /u01/prd/python/
 sudo cp $SCRIPTPATH/autogen_pw.py /u01/prd/python/
 sudo cp $SCRIPTPATH/git_update.py /u01/prd/python/
+sudo mkdir -p /home/pi/.ssh
 sudo chown -R pi:root /u01
+sudo chmod 700 -R /home/pi/.ssh
 tree /u01
 
 echo 
 
 echo "Pulling down all of the git repos"
 cd /u01/prd/lcd/
-git clone https://github.com/ToxicSamN/lcd35_install.git
+git clone https://github.com/ToxicSamN/LCD-show.git
+chmod -R 755 LCD-show
 cd /u01/prd/python/
 git clone https://github.com/ToxicSamN/StreamingVUMeter.git
 git clone https://github.com/ToxicSamN/pycrypt.git
@@ -136,12 +194,13 @@ echo
 echo "Configuring the streaming services"
 sudo cp $SCRIPTPATH/config/streaming.service /etc/systemd/system
 sudo cp $SCRIPTPATH/config/firstboot.service /etc/systemd/system
-sudo cp $SCRIPTPATH/config/firstboot_once.sh /etc/init.d/firstboot_once.sh
+# sudo cp $SCRIPTPATH/config/firstboot_once.sh /etc/init.d/firstboot_once.sh
 sudo cp $SCRIPTPATH/config/asound.state /u01/prd/streaming/
 sudo cp $SCRIPTPATH/config/passwdgen.service /etc/systemd/system
-sudo cp $SCRIPTPATH/config/icecast.xml /u01/prd/streaming/cfg/icecast/icecast.xml
-sudo cp $SCRIPTPATH/config/darkice.conf /u01/prd/streaming/cfg/darkice/darkice.conf
-sudo cp $SCRIPTPATH/config/vumeter.conf /u01/prd/streaming/cfg/vumeter/vumeter.conf
+sudo cp $SCRIPTPATH/config/server.conf /u01/prd/streaming/cfg/server.conf
+# sudo cp $SCRIPTPATH/config/icecast.xml /u01/prd/streaming/cfg/icecast/icecast.xml
+# sudo cp $SCRIPTPATH/config/darkice.conf /u01/prd/streaming/cfg/darkice/darkice.conf
+# sudo cp $SCRIPTPATH/config/vumeter.conf /u01/prd/streaming/cfg/vumeter/vumeter.conf
 sudo cp $SCRIPTPATH/config/icecast2 /etc/default/
 sudo cp $SCRIPTPATH/config/streaming-vu-meter.desktop /usr/share/applications/streaming-vu-meter.desktop
 sudo cp $SCRIPTPATH/config/alsastate.desktop /usr/share/applications/alsastate.desktop
@@ -154,31 +213,60 @@ sudo systemctl enable icecast2.service
 sudo systemctl start icecast2.service
 sudo systemctl enable streaming.service
 sudo systemctl start streaming.service
-sudo chmod +x /etc/init.d/firstboot_once.sh
+# sudo chmod +x /etc/init.d/firstboot_once.sh
 
 echo
+
+cd /u01/prd/streaming/cfg  # Working Directory
+# To encrypt
+# openssl enc -aes-256-cbc -in test_txt -out enc_txt -kfile enc_secret
+# To Decrypt
+# openssl enc -d -aes-256-cbc -in enc_txt -kfile enc_secret
+sudo openssl enc -d -aes-256-cbc -in /u01/prd/streaming/cfg/server.conf -kfile /u01/prd/rsa/enc_secret -out /u01/prd/tmp/d_server.conf
+set -o allexport
+source /u01/prd/tmp/d_server.conf
+set +o allexport
+sudo rm -f /u01/prd/tmp/d_server.conf
 
 echo "Configuring the configuration files"
-cd /u01/prd/streaming/cfg  # Working Directory
+echo -e "$icecast_xml" | sudo tee /u01/prd/cfg/icecast/icecast.xml
+echo -e "$darkice_conf"| sudo tee /u01/prd/cfg/darkice/darkice.conf
+echo -e "$vumeter_conf" | sudo tee /u01/prd/cfg/vumeter/vumeter.conf
+
+_hostname="$StreamMP-stream"
+
+if [[ "$RID" = "kgro" ]]
+	_ip="$kgro_ip"
+elif [[ "$RID" = "komx" ]]
+	_ip="$komx_ip"
+elif [[ "$RID" = "kdrl" ]]
+	_ip="$kdrl_ip"
+
+if [[ "$DUAL" = "TRUE" ]]; then
+	_ip=master_ip
+elif [[ "$MASTER" = "TRUE" ]]
+	_hostname="mypy_radpi"
+	_ip="master_ip"
+
 echo "Configuring Icecast2.xml"
-sudo sed -i.bak 's/<admin-user>admin<\/admin-user>/<admin-user>stream<\/admin-user>/' /u01/prd/streaming/cfg/icecast/icecast.xml
-sudo sed -i 's/<admin-password>hackme<\/admin-password>/<admin-password>'"$adminPswd"'<\/admin-password>/' /u01/prd/streaming/cfg/icecast/icecast.xml
-sudo sed -i 's/<source-password>hackme<\/source-password>/<source-password>'"$srcPswd"'<\/source-password>/' /u01/prd/streaming/cfg/icecast/icecast.xml
-sudo sed -i 's/<relay-password>hackme<\/relay-password>/<relay-password>'"$rlyPswd"'<\/relay-password>/' /u01/prd/streaming/cfg/icecast/icecast.xml
-sudo sed -i 's/<port>8000<\/port>/<port>'"$StreamPort"'<\/port>/' /u01/prd/streaming/cfg/icecast/icecast.xml
+# sudo sed -i.bak 's/<admin-user>admin<\/admin-user>/<admin-user>stream<\/admin-user>/' /u01/prd/streaming/cfg/icecast/icecast.xml
+# sudo sed -i 's/<admin-password>hackme<\/admin-password>/<admin-password>'"$adminPswd"'<\/admin-password>/' /u01/prd/streaming/cfg/icecast/icecast.xml
+# sudo sed -i 's/<source-password>hackme<\/source-password>/<source-password>'"$srcPswd"'<\/source-password>/' /u01/prd/streaming/cfg/icecast/icecast.xml
+# sudo sed -i 's/<relay-password>hackme<\/relay-password>/<relay-password>'"$rlyPswd"'<\/relay-password>/' /u01/prd/streaming/cfg/icecast/icecast.xml
+# sudo sed -i 's/<port>8000<\/port>/<port>'"$StreamPort"'<\/port>/' /u01/prd/streaming/cfg/icecast/icecast.xml
 echo
 echo "Configuring Darkice.conf"
-sudo sed -i.bak 's/port.*=.*8000.*/port = '"$StreamPort"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
-sudo sed -i 's/password.*=.*hackme.*/password = '"$srcPswd"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
-sudo sed -i 's/mountPoint.*=.*mpid.*/mountPoint = '"$StreamMP"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
-sudo sed -i 's/name.*=.*mpnm.*/name = '"$StreamName"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
+# sudo sed -i.bak 's/port.*=.*XXXX.*/port = '"$StreamPort"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
+# sudo sed -i 's/password.*=.*hackme.*/password = '"$srcPswd"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
+sudo sed -i.bak 's/mountPoint.*=.*XXXX.*/mountPoint = '"$StreamMP"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
+sudo sed -i 's/name.*=.*XXXX Broadcast.*/name = '"$StreamName"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
 sudo sed -i 's/description.*=.*XXXX Radio.*/description = '"$StreamDescription"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
 echo
 echo "Configuring Vumeter.conf"
 sudo sed -i.bak 's/streamName.*=.*XXXX Broadcast.*/streamName = '"$StreamName"'/' /u01/prd/streaming/cfg/vumeter/vumeter.conf
-sudo sed -i 's/mountPoint.*=.*mpid.*/mountPoint = '"$StreamMP"'/' /u01/prd/streaming/cfg/vumeter/vumeter.conf
-sudo sed -i 's/port.*=.*8000.*/port = '"$StreamPort"'/' /u01/prd/streaming/cfg/vumeter/vumeter.conf
-sudo sed -i 's/pswd.*=.*hackme.*/pswd = '"$adminPswd"'/' /u01/prd/streaming/cfg/vumeter/vumeter.conf
+# sudo sed -i 's/mountPoint.*=.*mpid.*/mountPoint = '"$StreamMP"'/' /u01/prd/streaming/cfg/vumeter/vumeter.conf
+# sudo sed -i 's/port.*=.*8000.*/port = '"$StreamPort"'/' /u01/prd/streaming/cfg/vumeter/vumeter.conf
+# sudo sed -i 's/pswd.*=.*hackme.*/pswd = '"$adminPswd"'/' /u01/prd/streaming/cfg/vumeter/vumeter.conf
 
 echo
 echo "Setting file/folder ownerships"
@@ -193,20 +281,23 @@ sudo sed -i 's/raspberrypi/'"$StreamMP"'-stream/' /etc/hosts
 echo
 
 echo "Auto-Generating Teamviewer Passwd"
-python3 /u01/prd/python/autogen_tvpw.py
+# python3 /u01/prd/python/autogen_tvpw.py
 
 echo 
-echo "Setting up CRON job for Teamviewer PW creation"
-(crontab -l; echo "0 0 1 * * python3 /u01/prd/python/autogen_tvpw.py") | crontab -
+# echo "Setting up CRON job for Teamviewer PW creation"
+# (crontab -l; echo "0 0 1 * * python3 /u01/prd/python/autogen_tvpw.py") | crontab -
 (crontab -l; echo "0 0-23 * * * python3 /u01/prd/python/git_update.py") | crontab -
+(crontab -l; echo "*/30 * * * * sudo systemctl restart streaming.service") | crontab -
 
-echo "Installing the LCD Screen Components"
-/u01/prd/lcd/lcd35_install/install_lcd35
-
-echo
 
 sudo apt-get update -y
 sudo apt-get upgrade -y
 
-echo "Dealing with teamviewer EULA until reboot"
-echo "y" | sudo teamviewer setup >> /dev/null
+
+echo "Installing the LCD Screen Components"
+sudo /u01/prd/lcd/LCD-show/LCD35-show
+
+echo
+
+echo "reboot"
+
