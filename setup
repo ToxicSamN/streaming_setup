@@ -4,7 +4,7 @@ SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 cd $SCRIPTPATH
 
-randpw(){ 
+randpw(){
 	< /dev/urandom tr -dc '_A-Z-a-z-0-9' | tail -n +1 | head -c${1:-32};
 	echo;
 }
@@ -22,18 +22,18 @@ RID=""
 MASTER="FALSE"
 DUAL="FALSE"
 
-while : 
+while :
 do
-	case "$1" in 
-		-s | --station-id)	
+	case "$1" in
+		-s | --station-id)
 			shift
 			RID="$1"
 			;;
-		-m | --master)	
+		-m | --master)
 			shift
 			MASTER="TRUE"
 			;;
-		-h | --help)	
+		-h | --help)
 			shift
 			usage
 			;;
@@ -53,59 +53,56 @@ do
 done
 RID=${RID,,}
 if [[ "$RID" = "kgro" || "$RID" = "komx" || "$RID" = "kdrl" || "$MASTER" = "TRUE" ]]; then
-	
+
 	if [[ "$MASTER" = "TRUE" && ( "$RID" = "kgro" || "$RID" = "komx" || "$RID" = "kdrl" ) ]]; then
-		# a station streaming pi is also the master
-		StationID=${RID^^}
-		StreamDescription=$(echo "$StationID Radio")
-		StreamName=$(echo "$StationID Broadcast")
-		StreamMP=$RID
-		# rlyPswd=$(randpw)
-		DUAL="TRUE"
-		
+	    # a station streaming pi is also the master
+	    StationID=${RID^^}
+	    StreamDescription=$(echo "$StationID Radio")
+	    StreamName=$(echo "$StationID Broadcast")
+            StreamMP=$RID
+	    DUAL="TRUE"
+
 	elif [[ "$MASTER" = "TRUE" && ! ( "$RID" = "kgro" || "$RID" = "komx" || "$RID" = "kdrl" ) ]]; then
-		# Master only pi
-		StationID=""
+	    # Master only pi
+            StationID=""
 	    StreamDescription=""
 	    StreamName=""
 	    StreamMP=""
 	    StreamPort="80"
-	    # rlyPswd=$(randpw)
 	else
-		StationID=${RID^^}
-		StreamDescription=$(echo "$StationID Radio")
-		StreamName=$(echo "$StationID Broadcast")
-		StreamMP=$RID
-		# rlyPswd=$(randpw)
-	
+            StationID=${RID^^}
+	    StreamDescription=$(echo "$StationID Radio")
+	    StreamName=$(echo "$StationID Broadcast")
+	    StreamMP=$RID
+       fi
 else
 	usage
 	echo "Which Radio Station do you wish to configure?"
 	select uin in "KGRO" "KOMX" "KDRL" "MASTER"; do
 		case $uin in
-			KGRO ) StationID="KGRO"; 
-			   StreamDescription="KGRO Radio"; 
+			KGRO ) StationID="KGRO";
+			   StreamDescription="KGRO Radio";
 			   StreamName="KGRO Broadcast";
 			   StreamMP="kgro";
 			   break;;
 			KOMX ) StationID="KOMX";
-			   StreamDescription="KOMX Radio"; 
+			   StreamDescription="KOMX Radio";
 			   StreamName="KOMX Broadcast";
 			   StreamMP="komx";
 			   break;;
 			KDRL ) StationID="KDRL";
-			   StreamDescription="KDRL Radio"; 
+			   StreamDescription="KDRL Radio";
 			   StreamName="KDRL Broadcast";
 			   StreamMP="kdrl";
 			   break;;
 			MASTER ) StationID="";
-			   StreamDescription=""; 
+			   StreamDescription="";
 			   StreamName="";
 			   StreamMP="";
 			   break;;
 		esac
 	done
-	
+fi
 sudo apt-get remove --purge libreoffice* -y
 sudo apt-get purge wolfram-engine -y
 sudo apt-get clean -y
@@ -128,13 +125,13 @@ sudo apt-get clean -y
 sudo apt-get autoremove -y
 
 sudo timedatectl set-timezone "America/Chicago"
- 
+
 echo
 echo "Setting up Python PyGame"
 cd ~/
 hg clone https://bitbucket.org/pygame/pygame
 cd pygame
-python3 setup.py build 
+python3 setup.py build
 sudo python3 setup.py install
 cd ~/
 sudo rm -fR ~/pygame/
@@ -179,7 +176,7 @@ sudo chown -R pi:root /u01
 sudo chmod 700 -R /home/pi/.ssh
 tree /u01
 
-echo 
+echo
 
 echo "Pulling down all of the git repos"
 cd /u01/prd/lcd/
@@ -241,12 +238,14 @@ elif [[ "$RID" = "komx" ]]
 	_ip="$komx_ip"
 elif [[ "$RID" = "kdrl" ]]
 	_ip="$kdrl_ip"
+fi
 
 if [[ "$DUAL" = "TRUE" ]]; then
 	_ip=master_ip
 elif [[ "$MASTER" = "TRUE" ]]
 	_hostname="mypy_radpi"
 	_ip="master_ip"
+fi
 
 echo "Configuring Icecast2.xml"
 # sudo sed -i.bak 's/<admin-user>admin<\/admin-user>/<admin-user>stream<\/admin-user>/' /u01/prd/streaming/cfg/icecast/icecast.xml
@@ -283,7 +282,7 @@ echo
 echo "Auto-Generating Teamviewer Passwd"
 # python3 /u01/prd/python/autogen_tvpw.py
 
-echo 
+echo
 # echo "Setting up CRON job for Teamviewer PW creation"
 # (crontab -l; echo "0 0 1 * * python3 /u01/prd/python/autogen_tvpw.py") | crontab -
 (crontab -l; echo "0 0-23 * * * python3 /u01/prd/python/git_update.py") | crontab -
