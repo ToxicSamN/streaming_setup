@@ -220,13 +220,9 @@ set +o allexport
 sudo rm -f /u01/prd/tmp/d_server.conf
 
 echo "Configuring the configuration files"
-sudo touch /u01/prd/cfg/icecast/icecast.xml
-sudo touch /u01/prd/cfg/darkice/darkice.conf
-sudo touch /u01/prd/cfg/vumeter/vumeter.conf
-
-echo -e "$icecast_xml" | sudo tee /u01/prd/cfg/icecast/icecast.xml
-echo -e "$darkice_conf"| sudo tee /u01/prd/cfg/darkice/darkice.conf
-echo -e "$vumeter_conf" | sudo tee /u01/prd/cfg/vumeter/vumeter.conf
+echo -e "$icecast_xml" | sudo tee /u01/prd/streaming/cfg/icecast/icecast.xml
+echo -e "$darkice_conf"| sudo tee /u01/prd/streaming/cfg/darkice/darkice.conf
+echo -e "$vumeter_conf" | sudo tee /u01/prd/streaming/cfg/vumeter/vumeter.conf
 
 _hostname="$StreamMP-stream"
 
@@ -284,6 +280,7 @@ echo
 echo "Setting up Logmein Hamachi"
 sudo hamachi login
 sudo hamachi set-nick "$_hostname"
+sleep 5
 sudo hamachi do-join "$hamachi_id" "$pi_passwd"
 
 echo
@@ -304,7 +301,6 @@ fallback static_eth0
 "
 echo -e "$dhcpcd" | sudo tee --append /etc/dhcpcd.conf
 
-
 sudo apt-get update -y
 sudo apt-get upgrade -y
 
@@ -312,10 +308,11 @@ sudo apt-get upgrade -y
     # A streaming rPi has an LCD screen, the master rPi does not. 
 	# check the condition of what this rPi is used for and setup the LCD if and only if it is a streaming rPi
     echo "Installing the LCD Screen Components"
-    sudo /u01/prd/lcd/LCD-show/install_lcd35 --preserve-boot-cmdline --no-reboot
+	cd /u01/prd/lcd/LCD-show
+    sudo ./install_lcd35 --preserve-boot-cmdline --no-reboot
 fi
 
 echo
 
-echo "reboot"
+echo "Complete, rebooting.."
 sudo reboot
