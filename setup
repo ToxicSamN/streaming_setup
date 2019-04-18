@@ -119,8 +119,8 @@ sudo apt-get install -y darkice mutt
 sudo apt-get install -y exfat-fuse exfat-utils rsync gdisk
 sudo apt-get install -y lsb lsb-core, htop
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y icecast2
-sudo apt install -y $SCRIPTPATH/teamviewer-host_14.1.9025_armhf.deb
-sudo apt install -y $SCRIPTPATH/logmein-hamachi_2.1.0.198-1_armhf.deb
+sudo apt install -y $SCRIPTPATH/software/teamviewer-host_14.1.9025_armhf.deb
+sudo apt install -y $SCRIPTPATH/software/logmein-hamachi_2.1.0.198-1_armhf.deb
 sudo apt-get clean -y
 sudo apt-get autoremove -y
 
@@ -270,6 +270,20 @@ echo
 # echo "Setting up CRON jobs"
 (crontab -l; echo "0 0-23 * * * python3 /u01/prd/python/git_update.py") | crontab -
 (crontab -l; echo "*/30 * * * * sudo systemctl restart streaming.service") | crontab -
+
+echo
+echo "Setting up VNC"
+sudo  raspi-config nonint do_vnc 0
+
+echo
+echo "Changing the password"
+(echo "raspberry"; echo "$pi_passwd"; echo "$pi_passwd") | passwd
+
+echo
+echo "Setting up Logmein Hamachi"
+sudo hamachi login
+sudo hamachi set-nick "$_hostname"
+sudo hamachi do-join "$hamachi_id" "$pi_passwd"
 
 
 sudo apt-get update -y
