@@ -279,6 +279,7 @@ sudo chown -R icecast2:icecast /u01/prd/streaming/cfg/icecast
 echo
 echo "Changing hostname"
 sudo raspi-config nonint do_hostname "$_hostname"
+sudo hostnamectl set-hostname "$_hostname"
 sudo sed -i 's/raspberrypi/'"$_hostname"'/' /etc/hosts
 
 echo
@@ -296,11 +297,13 @@ echo
 sudo apt-get update -y
 sudo apt-get upgrade -y
 
-
-echo "Installing the LCD Screen Components"
-sudo /u01/prd/lcd/LCD-show/LCD35-show
+ if [[ "$DUAL" = "TRUE" || "$MASTER" = "FALSE" ]]; then
+    # A streaming rPi has an LCD screen, the master rPi does not. 
+	# check the condition of what this rPi is used for and setup the LCD if and only if it is a streamin rPi
+    echo "Installing the LCD Screen Components"
+    sudo /u01/prd/lcd/LCD-show/install_lcd35 --preserve-boot-cmdline --no-reboot
 
 echo
 
 echo "reboot"
-
+sudo reboot
