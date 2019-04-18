@@ -290,14 +290,14 @@ echo
 echo "Setting up Static IP address"
 dhcpcd="
 interface eth0
-static ip_address=$_ip/$cidr
-static routers=$gateway
-static domain_name_servers=$dns
+static ip_address=$_ip/$cidr 
+static routers=$gateway 
+static domain_name_servers=$dns 
 
 profile static_eth0
-static ip_address=$_ip/$cidr
-static routers=$gateway
-static domain_name_servers=$dns
+static ip_address=$_ip/$cidr 
+static routers=$gateway 
+static domain_name_servers=$dns 
 
 interface eth0
 fallback static_eth0
