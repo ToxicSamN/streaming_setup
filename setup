@@ -313,6 +313,7 @@ sudo apt-get upgrade -y
 	# check the condition of what this rPi is used for and setup the LCD if and only if it is a streaming rPi
     echo "Installing the LCD Screen Components"
     sudo /u01/prd/lcd/LCD-show/install_lcd35 --preserve-boot-cmdline --no-reboot
+fi
 
 echo
 
