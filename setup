@@ -242,7 +242,7 @@ if [[ "$DUAL" = "TRUE" ]]; then
 	_ip=master_ip
 elif [[ "$MASTER" = "TRUE" ]]; then
 	_hostname="mypy_radpi"
-	_ip="master_ip"
+	_ip="$master_ip"
 fi
 
 echo "Configuring Icecast2.xml"
