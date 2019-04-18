@@ -232,17 +232,17 @@ echo -e "$vumeter_conf" | sudo tee /u01/prd/cfg/vumeter/vumeter.conf
 
 _hostname="$StreamMP-stream"
 
-if [[ "$RID" = "kgro" ]]
+if [[ "$RID" = "kgro" ]]; then
 	_ip="$kgro_ip"
-elif [[ "$RID" = "komx" ]]
+elif [[ "$RID" = "komx" ]]; then
 	_ip="$komx_ip"
-elif [[ "$RID" = "kdrl" ]]
+elif [[ "$RID" = "kdrl" ]]; then
 	_ip="$kdrl_ip"
 fi
 
 if [[ "$DUAL" = "TRUE" ]]; then
 	_ip=master_ip
-elif [[ "$MASTER" = "TRUE" ]]
+elif [[ "$MASTER" = "TRUE" ]]; then
 	_hostname="mypy_radpi"
 	_ip="master_ip"
 fi
