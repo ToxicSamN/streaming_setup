@@ -190,14 +190,9 @@ echo
 
 echo "Configuring the streaming services"
 sudo cp $SCRIPTPATH/config/streaming.service /etc/systemd/system
-sudo cp $SCRIPTPATH/config/firstboot.service /etc/systemd/system
-# sudo cp $SCRIPTPATH/config/firstboot_once.sh /etc/init.d/firstboot_once.sh
 sudo cp $SCRIPTPATH/config/asound.state /u01/prd/streaming/
 sudo cp $SCRIPTPATH/config/passwdgen.service /etc/systemd/system
 sudo cp $SCRIPTPATH/config/server.conf /u01/prd/streaming/cfg/server.conf
-# sudo cp $SCRIPTPATH/config/icecast.xml /u01/prd/streaming/cfg/icecast/icecast.xml
-# sudo cp $SCRIPTPATH/config/darkice.conf /u01/prd/streaming/cfg/darkice/darkice.conf
-# sudo cp $SCRIPTPATH/config/vumeter.conf /u01/prd/streaming/cfg/vumeter/vumeter.conf
 sudo cp $SCRIPTPATH/config/icecast2 /etc/default/
 sudo cp $SCRIPTPATH/config/streaming-vu-meter.desktop /usr/share/applications/streaming-vu-meter.desktop
 sudo cp $SCRIPTPATH/config/alsastate.desktop /usr/share/applications/alsastate.desktop
@@ -210,7 +205,6 @@ sudo systemctl enable icecast2.service
 sudo systemctl start icecast2.service
 sudo systemctl enable streaming.service
 sudo systemctl start streaming.service
-# sudo chmod +x /etc/init.d/firstboot_once.sh
 
 echo
 
@@ -252,24 +246,14 @@ elif [[ "$MASTER" = "TRUE" ]]; then
 fi
 
 echo "Configuring Icecast2.xml"
-# sudo sed -i.bak 's/<admin-user>admin<\/admin-user>/<admin-user>stream<\/admin-user>/' /u01/prd/streaming/cfg/icecast/icecast.xml
-# sudo sed -i 's/<admin-password>hackme<\/admin-password>/<admin-password>'"$adminPswd"'<\/admin-password>/' /u01/prd/streaming/cfg/icecast/icecast.xml
-# sudo sed -i 's/<source-password>hackme<\/source-password>/<source-password>'"$srcPswd"'<\/source-password>/' /u01/prd/streaming/cfg/icecast/icecast.xml
-# sudo sed -i 's/<relay-password>hackme<\/relay-password>/<relay-password>'"$rlyPswd"'<\/relay-password>/' /u01/prd/streaming/cfg/icecast/icecast.xml
-# sudo sed -i 's/<port>8000<\/port>/<port>'"$StreamPort"'<\/port>/' /u01/prd/streaming/cfg/icecast/icecast.xml
 echo
 echo "Configuring Darkice.conf"
-# sudo sed -i.bak 's/port.*=.*XXXX.*/port = '"$StreamPort"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
-# sudo sed -i 's/password.*=.*hackme.*/password = '"$srcPswd"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
 sudo sed -i.bak 's/mountPoint.*=.*XXXX.*/mountPoint = '"$StreamMP"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
 sudo sed -i 's/name.*=.*XXXX Broadcast.*/name = '"$StreamName"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
 sudo sed -i 's/description.*=.*XXXX Radio.*/description = '"$StreamDescription"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
 echo
 echo "Configuring Vumeter.conf"
 sudo sed -i.bak 's/streamName.*=.*XXXX Broadcast.*/streamName = '"$StreamName"'/' /u01/prd/streaming/cfg/vumeter/vumeter.conf
-# sudo sed -i 's/mountPoint.*=.*mpid.*/mountPoint = '"$StreamMP"'/' /u01/prd/streaming/cfg/vumeter/vumeter.conf
-# sudo sed -i 's/port.*=.*8000.*/port = '"$StreamPort"'/' /u01/prd/streaming/cfg/vumeter/vumeter.conf
-# sudo sed -i 's/pswd.*=.*hackme.*/pswd = '"$adminPswd"'/' /u01/prd/streaming/cfg/vumeter/vumeter.conf
 
 echo
 echo "Setting file/folder ownerships"
@@ -283,13 +267,7 @@ sudo hostnamectl set-hostname "$_hostname"
 sudo sed -i 's/raspberrypi/'"$_hostname"'/' /etc/hosts
 
 echo
-
-echo "Auto-Generating Teamviewer Passwd"
-# python3 /u01/prd/python/autogen_tvpw.py
-
-echo
-# echo "Setting up CRON job for Teamviewer PW creation"
-# (crontab -l; echo "0 0 1 * * python3 /u01/prd/python/autogen_tvpw.py") | crontab -
+# echo "Setting up CRON jobs"
 (crontab -l; echo "0 0-23 * * * python3 /u01/prd/python/git_update.py") | crontab -
 (crontab -l; echo "*/30 * * * * sudo systemctl restart streaming.service") | crontab -
 
@@ -299,7 +277,7 @@ sudo apt-get upgrade -y
 
  if [[ "$DUAL" = "TRUE" || "$MASTER" = "FALSE" ]]; then
     # A streaming rPi has an LCD screen, the master rPi does not. 
-	# check the condition of what this rPi is used for and setup the LCD if and only if it is a streamin rPi
+	# check the condition of what this rPi is used for and setup the LCD if and only if it is a streaming rPi
     echo "Installing the LCD Screen Components"
     sudo /u01/prd/lcd/LCD-show/install_lcd35 --preserve-boot-cmdline --no-reboot
 
