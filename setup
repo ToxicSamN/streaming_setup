@@ -270,6 +270,7 @@ echo
 # echo "Setting up CRON jobs"
 (crontab -l; echo "0 0-23 * * * python3 /u01/prd/python/git_update.py") | crontab -
 (crontab -l; echo "*/30 * * * * sudo systemctl restart streaming.service") | crontab -
+(crontab -l; echo "0 0 * * * sudo systemctl restart logmein-hamachi.service") | crontab -
 
 echo
 echo "Setting up VNC"
@@ -284,6 +285,24 @@ echo "Setting up Logmein Hamachi"
 sudo hamachi login
 sudo hamachi set-nick "$_hostname"
 sudo hamachi do-join "$hamachi_id" "$pi_passwd"
+
+echo
+echo "Setting up Static IP address"
+dhcpcd="
+interface eth0
+static ip_address=$_ip/$cidr
+static routers=$gateway
+static domain_name_servers=$dns
+
+profile static_eth0
+static ip_address=$_ip/$cidr
+static routers=$gateway
+static domain_name_servers=$dns
+
+interface eth0
+fallback static_eth0
+"
+echo -e "$dhcpcd" | sudo tee --append /etc/dhcpcd.conf
 
 
 sudo apt-get update -y
