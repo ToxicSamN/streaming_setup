@@ -226,6 +226,10 @@ set +o allexport
 sudo rm -f /u01/prd/tmp/d_server.conf
 
 echo "Configuring the configuration files"
+sudo touch /u01/prd/cfg/icecast/icecast.xml
+sudo touch /u01/prd/cfg/darkice/darkice.conf
+sudo touch /u01/prd/cfg/vumeter/vumeter.conf
+
 echo -e "$icecast_xml" | sudo tee /u01/prd/cfg/icecast/icecast.xml
 echo -e "$darkice_conf"| sudo tee /u01/prd/cfg/darkice/darkice.conf
 echo -e "$vumeter_conf" | sudo tee /u01/prd/cfg/vumeter/vumeter.conf
@@ -274,8 +278,8 @@ sudo chown -R icecast2:icecast /u01/prd/streaming/cfg/icecast
 
 echo
 echo "Changing hostname"
-sudo hostnamectl set-hostname "$StreamMP-stream"
-sudo sed -i 's/raspberrypi/'"$StreamMP"'-stream/' /etc/hosts
+sudo raspi-config nonint do_hostname "$_hostname"
+sudo sed -i 's/raspberrypi/'"$_hostname"'/' /etc/hosts
 
 echo
 
