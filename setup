@@ -259,10 +259,8 @@ elif [[ "$MASTER" = "TRUE" ]]; then
 	_ip="$master_ip"
 	_port="8000"
 elif [[ "$DEV" = "TRUE" ]]; then
+	# dev should be dhcp only
 	_hostname="mypy_radpi_dev"
-	_ip="$dev_ip"
-	gateway="$dev_gateway"
-	dns="$dev_dns"
 	_port="8000"
 fi
 
@@ -313,21 +311,22 @@ sudo hamachi do-join "$hamachi_id" "$pi_passwd"
 
 echo
 echo "Setting up Static IP address"
-dhcpcd="
-interface eth0
-static ip_address=$_ip/$cidr 
-static routers=$gateway 
-static domain_name_servers=$dns 
+if [[ "$DEV" = "FALSE" ]]; then
+	dhcpcd="
+	interface eth0
+	static ip_address=$_ip/$cidr 
+	static routers=$gateway 
+	static domain_name_servers=$dns 
 
-profile static_eth0
-static ip_address=$_ip/$cidr 
-static routers=$gateway 
-static domain_name_servers=$dns 
+	profile static_eth0
+	static ip_address=$_ip/$cidr 
+	static routers=$gateway 
+	static domain_name_servers=$dns 
 
-interface eth0
-fallback static_eth0
-"
-echo -e "$dhcpcd" | sudo tee --append /etc/dhcpcd.conf
+	interface eth0
+	fallback static_eth0
+	"
+	echo -e "$dhcpcd" | sudo tee --append /etc/dhcpcd.conf
 
 sudo apt-get update -y
 sudo apt-get upgrade -y
