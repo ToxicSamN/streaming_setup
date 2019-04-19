@@ -57,7 +57,7 @@ do
 	shift
 done
 RID=${RID,,}
-if [[ "$RID" = "kgro" || "$RID" = "komx" || "$RID" = "kdrl" || "$MASTER" = "TRUE" ]]; then
+if [[ "$RID" = "kgro" || "$RID" = "komx" || "$RID" = "kdrl" || "$MASTER" = "TRUE" || "$DEV" = "TRUE" ]]; then
 
 	if [[ "$MASTER" = "TRUE" && ( "$RID" = "kgro" || "$RID" = "komx" || "$RID" = "kdrl" ) ]]; then
 	    # a station streaming pi is also the master
