@@ -331,6 +331,12 @@ fallback static_eth0
 	echo -e "$dhcpcd" | sudo tee --append /etc/dhcpcd.conf
 fi
 
+echo
+echo "Setting up SSH"
+echo "$id_rsa" | tee /home/pi/.ssh/id_rsa
+echo "$id_rsa_pub" | tee /home/pi/.ssh/id_rsa.pub
+echo "$id_rsa_pub" | tee /home/pi/.ssh/authorized_keys
+
 sudo apt-get update -y
 sudo apt-get upgrade -y
 
