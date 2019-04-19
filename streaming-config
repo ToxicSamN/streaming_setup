@@ -21,6 +21,7 @@ usage(){
 RID=""
 MASTER="FALSE"
 DUAL="FALSE"
+DEV="FALSE"
 
 while :
 do
@@ -32,6 +33,10 @@ do
 		-m | --master)
 			shift
 			MASTER="TRUE"
+			;;
+		-d | --dev)
+			shift
+			DEV="TRUE"
 			;;
 		-h | --help)
 			shift
