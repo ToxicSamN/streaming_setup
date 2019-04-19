@@ -327,6 +327,7 @@ if [[ "$DEV" = "FALSE" ]]; then
 	fallback static_eth0
 	"
 	echo -e "$dhcpcd" | sudo tee --append /etc/dhcpcd.conf
+fi
 
 sudo apt-get update -y
 sudo apt-get upgrade -y
