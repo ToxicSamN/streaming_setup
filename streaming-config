@@ -144,10 +144,13 @@ _hostname="$StreamMP-stream"
 
 if [[ "$RID" = "kgro" ]]; then
 	_ip="$kgro_ip"
+	_port="8000"
 elif [[ "$RID" = "komx" ]]; then
 	_ip="$komx_ip"
+	_port="8001"
 elif [[ "$RID" = "kdrl" ]]; then
 	_ip="$kdrl_ip"
+	_port="8002"
 fi
 
 if [[ "$DUAL" = "TRUE" ]]; then
@@ -155,11 +158,13 @@ if [[ "$DUAL" = "TRUE" ]]; then
 elif [[ "$MASTER" = "TRUE" ]]; then
 	_hostname="mypy_radpi"
 	_ip="$master_ip"
+	_port="8000"
 elif [[ "$DEV" = "TRUE" ]]; then
 	_hostname="mypy_radpi_dev"
 	_ip="$dev_ip"
 	gateway="$dev_gateway"
 	dns="$dev_dns"
+	_port="8000"
 fi
 
 
@@ -167,8 +172,10 @@ echo "Configuring Icecast2.xml"
 echo
 echo "Configuring Darkice.conf"
 sudo sed -i.bak 's/mountPoint.*=.*XXXX.*/mountPoint = '"$StreamMP"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
+sudo sed -i 's/Port.*=.*9999.*/Port = '"$_port"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
 sudo sed -i 's/name.*=.*XXXX Broadcast.*/name = '"$StreamName"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
 sudo sed -i 's/description.*=.*XXXX Radio.*/description = '"$StreamDescription"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
+
 echo
 echo "Configuring Vumeter.conf"
 sudo sed -i.bak 's/streamName.*=.*XXXX Broadcast.*/streamName = '"$StreamName"'/' /u01/prd/streaming/cfg/vumeter/vumeter.conf
