@@ -69,6 +69,13 @@ if [[ "$RID" = "kgro" || "$RID" = "komx" || "$RID" = "kdrl" || "$MASTER" = "TRUE
 	    StreamName=""
 	    StreamMP=""
 	    StreamPort="80"
+	elif [[ "$DEV" = "TRUE" && ! ( "$RID" = "kgro" || "$RID" = "komx" || "$RID" = "kdrl" ) ]]; then
+	    # DEV only pi
+            StationID=""
+	    StreamDescription=""
+	    StreamName=""
+	    StreamMP=""
+	    StreamPort="80"
 	else
             StationID=${RID^^}
 	    StreamDescription=$(echo "$StationID Radio")
@@ -96,6 +103,11 @@ else
 			   StreamMP="kdrl";
 			   break;;
 			MASTER ) StationID="";
+			   StreamDescription="";
+			   StreamName="";
+			   StreamMP="";
+			   break;;
+			DEV ) StationID="";
 			   StreamDescription="";
 			   StreamName="";
 			   StreamMP="";
@@ -137,7 +149,13 @@ if [[ "$DUAL" = "TRUE" ]]; then
 elif [[ "$MASTER" = "TRUE" ]]; then
 	_hostname="mypy_radpi"
 	_ip="$master_ip"
+elif [[ "$DEV" = "TRUE" ]]; then
+	_hostname="mypy_radpi_dev"
+	_ip="$dev_ip"
+	gateway="$dev_gateway"
+	dns="dev_dns"
 fi
+
 
 echo "Configuring Icecast2.xml"
 echo
