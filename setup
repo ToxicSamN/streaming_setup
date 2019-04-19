@@ -312,20 +312,20 @@ sudo hamachi do-join "$hamachi_id" "$pi_passwd"
 echo
 echo "Setting up Static IP address"
 if [[ "$DEV" = "FALSE" ]]; then
-	dhcpcd="
-	interface eth0
-	static ip_address=$_ip/$cidr 
-	static routers=$gateway 
-	static domain_name_servers=$dns 
+dhcpcd="
+interface eth0
+static ip_address=$_ip/$cidr 
+static routers=$gateway 
+static domain_name_servers=$dns 
 
-	profile static_eth0
-	static ip_address=$_ip/$cidr 
-	static routers=$gateway 
-	static domain_name_servers=$dns 
+profile static_eth0
+static ip_address=$_ip/$cidr 
+static routers=$gateway 
+static domain_name_servers=$dns 
 
-	interface eth0
-	fallback static_eth0
-	"
+interface eth0
+fallback static_eth0
+"
 	echo -e "$dhcpcd" | sudo tee --append /etc/dhcpcd.conf
 fi
 
