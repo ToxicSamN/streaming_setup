@@ -1,0 +1,187 @@
+#!/bin/bash
+
+SCRIPT=$(readlink -f "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+cd $SCRIPTPATH
+
+randpw(){
+	< /dev/urandom tr -dc '_A-Z-a-z-0-9' | tail -n +1 | head -c${1:-32};
+	echo;
+}
+
+usage(){
+	s_desc="Radio station ID (KGRO, KOMX, KDRL)"
+	m_desc="Designate if this Raspberry Pi should be the master streaming server"
+	h_desc="\t\tProvide usage information."
+	printf "Usage: \n  $0 [OPTIONS]\n\nOPTIONS:\n"
+	printf "  -s | --station-id\t\t$s_desc\n  -m | --master\t$m_desc\n  -h | --help\t$h_desc\n\n\n"
+	exit 
+}
+
+RID=""
+MASTER="FALSE"
+DUAL="FALSE"
+
+while :
+do
+	case "$1" in
+		-s | --station-id)
+			shift
+			RID="$1"
+			;;
+		-m | --master)
+			shift
+			MASTER="TRUE"
+			;;
+		-h | --help)
+			shift
+			usage
+			;;
+		--) # end of all options
+			shift
+			break
+			;;
+		-*) # unknown option
+			echo "Error: Unknown Parameter: $1" >&2
+			exit 99
+			;;
+		* )	# no more options
+			break
+			;;
+	esac
+	shift
+done
+RID=${RID,,}
+if [[ "$RID" = "kgro" || "$RID" = "komx" || "$RID" = "kdrl" || "$MASTER" = "TRUE" ]]; then
+
+	if [[ "$MASTER" = "TRUE" && ( "$RID" = "kgro" || "$RID" = "komx" || "$RID" = "kdrl" ) ]]; then
+	    # a station streaming pi is also the master
+	    StationID=${RID^^}
+	    StreamDescription=$(echo "$StationID Radio")
+	    StreamName=$(echo "$StationID Broadcast")
+            StreamMP=$RID
+	    DUAL="TRUE"
+
+	elif [[ "$MASTER" = "TRUE" && ! ( "$RID" = "kgro" || "$RID" = "komx" || "$RID" = "kdrl" ) ]]; then
+	    # Master only pi
+            StationID=""
+	    StreamDescription=""
+	    StreamName=""
+	    StreamMP=""
+	    StreamPort="80"
+	else
+            StationID=${RID^^}
+	    StreamDescription=$(echo "$StationID Radio")
+	    StreamName=$(echo "$StationID Broadcast")
+	    StreamMP=$RID
+       fi
+else
+	usage
+	echo "Which Radio Station do you wish to configure?"
+	select uin in "KGRO" "KOMX" "KDRL" "MASTER"; do
+		case $uin in
+			KGRO ) StationID="KGRO";
+			   StreamDescription="KGRO Radio";
+			   StreamName="KGRO Broadcast";
+			   StreamMP="kgro";
+			   break;;
+			KOMX ) StationID="KOMX";
+			   StreamDescription="KOMX Radio";
+			   StreamName="KOMX Broadcast";
+			   StreamMP="komx";
+			   break;;
+			KDRL ) StationID="KDRL";
+			   StreamDescription="KDRL Radio";
+			   StreamName="KDRL Broadcast";
+			   StreamMP="kdrl";
+			   break;;
+			MASTER ) StationID="";
+			   StreamDescription="";
+			   StreamName="";
+			   StreamMP="";
+			   break;;
+		esac
+	done
+fi
+
+echo
+
+cd /u01/prd/streaming/cfg  # Working Directory
+# To encrypt
+# openssl enc -aes-256-cbc -in test_txt -out enc_txt -kfile enc_secret
+# To Decrypt
+# openssl enc -d -aes-256-cbc -in enc_txt -kfile enc_secret
+sudo openssl enc -d -aes-256-cbc -in /u01/prd/streaming/cfg/server.conf -kfile /u01/prd/rsa/enc_secret -out /u01/prd/tmp/d_server.conf
+set -o allexport
+source /u01/prd/tmp/d_server.conf
+set +o allexport
+sudo rm -f /u01/prd/tmp/d_server.conf
+
+echo "Configuring the configuration files"
+echo -e "$icecast_xml" | sudo tee /u01/prd/streaming/cfg/icecast/icecast.xml
+echo -e "$darkice_conf"| sudo tee /u01/prd/streaming/cfg/darkice/darkice.conf
+echo -e "$vumeter_conf" | sudo tee /u01/prd/streaming/cfg/vumeter/vumeter.conf
+
+_hostname="$StreamMP-stream"
+
+if [[ "$RID" = "kgro" ]]; then
+	_ip="$kgro_ip"
+elif [[ "$RID" = "komx" ]]; then
+	_ip="$komx_ip"
+elif [[ "$RID" = "kdrl" ]]; then
+	_ip="$kdrl_ip"
+fi
+
+if [[ "$DUAL" = "TRUE" ]]; then
+	_ip="$master_ip"
+elif [[ "$MASTER" = "TRUE" ]]; then
+	_hostname="mypy_radpi"
+	_ip="$master_ip"
+fi
+
+echo "Configuring Icecast2.xml"
+echo
+echo "Configuring Darkice.conf"
+sudo sed -i.bak 's/mountPoint.*=.*XXXX.*/mountPoint = '"$StreamMP"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
+sudo sed -i 's/name.*=.*XXXX Broadcast.*/name = '"$StreamName"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
+sudo sed -i 's/description.*=.*XXXX Radio.*/description = '"$StreamDescription"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
+echo
+echo "Configuring Vumeter.conf"
+sudo sed -i.bak 's/streamName.*=.*XXXX Broadcast.*/streamName = '"$StreamName"'/' /u01/prd/streaming/cfg/vumeter/vumeter.conf
+
+echo
+echo "Setting file/folder ownerships"
+sudo chown -R pi:root /u01/prd/streaming
+sudo chown -R icecast2:icecast /u01/prd/streaming/cfg/icecast
+
+echo
+echo "Changing hostname"
+sudo raspi-config nonint do_hostname "$_hostname"
+sudo hostnamectl set-hostname "$_hostname"
+sudo sed -i 's/raspberrypi/'"$_hostname"'/' /etc/hosts
+
+echo
+echo "Setting up VNC"
+sudo  raspi-config nonint do_vnc 0
+
+echo
+echo "Changing the password"
+(echo "raspberry"; echo "$pi_passwd"; echo "$pi_passwd") | passwd
+
+echo
+echo "Setting up Logmein Hamachi"
+sudo hamachi login
+sudo hamachi set-nick "$_hostname"
+sleep 5
+sudo hamachi do-join "$hamachi_id" "$pi_passwd"
+
+echo
+echo "Setting up Static IP address"
+sudo sed -i 's/static ip_address=.*/static ip_address='"$_ip/$cidr"'/'
+sudo sed -i 's/static routers=.*/static routers='"$_ip/$cidr"'/'
+sudo sed -i 's/static domain_name_servers=.*/static domain_name_servers='"$_ip/$cidr"'/'
+
+echo
+
+echo "Complete, rebooting.."
+sudo reboot

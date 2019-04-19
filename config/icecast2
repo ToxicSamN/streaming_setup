@@ -10,7 +10,7 @@
 CONFIGFILE="/u01/prd/streaming/cfg/icecast/icecast.xml"
 
 # Name or ID of the user and group the daemon should run under
-USERID=icecast2
+USERID=root
 GROUPID=icecast
 
 # Edit /etc/icecast2/icecast.xml and change at least the passwords.

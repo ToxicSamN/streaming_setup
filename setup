@@ -12,9 +12,9 @@ randpw(){
 usage(){
 	s_desc="Radio station ID (KGRO, KOMX, KDRL)"
 	m_desc="Designate if this Raspberry Pi should be the master streaming server"
-	h_desc="\t\tprovide usage information."
+	h_desc="\t\tProvide usage information."
 	printf "Usage: \n  $0 [OPTIONS]\n\nOPTIONS:\n"
-	printf "  -n | --no-reboot)\t$n_desc\n  -p | --preserve-boot-cmdline\t$p_desc\n  -h | --help\t$h_desc\n\n\n"
+	printf "  -s | --station-id\t\t$s_desc\n  -m | --master\t$m_desc\n  -h | --help\t$h_desc\n\n\n"
 	exit 1
 }
 
@@ -179,6 +179,8 @@ tree /u01
 echo
 
 echo "Pulling down all of the git repos"
+cd /u01/prd/streaming/cfg/
+git clone https://github.com/ToxicSamN/streaming_setup.git
 cd /u01/prd/lcd/
 git clone https://github.com/ToxicSamN/LCD-show.git
 chmod -R 755 LCD-show
