@@ -177,9 +177,9 @@ sudo hamachi do-join "$hamachi_id" "$pi_passwd"
 
 echo
 echo "Setting up Static IP address"
-sudo sed -i 's/static ip_address=.*/static ip_address='"$_ip/$cidr"'/' /etc/dhcpcd.conf
-sudo sed -i 's/static routers=.*/static routers='"$_ip/$cidr"'/' /etc/dhcpcd.conf
-sudo sed -i 's/static domain_name_servers=.*/static domain_name_servers='"$_ip/$cidr"'/' /etc/dhcpcd.conf
+sudo sed -i 's/static ip_address=.*/static ip_address='"$_ip\/$cidr"'/' /etc/dhcpcd.conf
+sudo sed -i 's/static routers=.*/static routers='"$gateway"'/' /etc/dhcpcd.conf
+sudo sed -i 's/static domain_name_servers=.*/static domain_name_servers='"$dns"'/' /etc/dhcpcd.conf
 
 echo
 
