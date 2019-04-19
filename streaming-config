@@ -159,7 +159,7 @@ elif [[ "$DEV" = "TRUE" ]]; then
 	_hostname="mypy_radpi_dev"
 	_ip="$dev_ip"
 	gateway="$dev_gateway"
-	dns="dev_dns"
+	dns="$dev_dns"
 fi
 
 
