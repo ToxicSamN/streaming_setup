@@ -212,6 +212,7 @@ sudo cp $SCRIPTPATH/config/streaming.service /etc/systemd/system
 sudo cp $SCRIPTPATH/config/asound.state /u01/prd/streaming/
 sudo cp $SCRIPTPATH/config/passwdgen.service /etc/systemd/system
 sudo cp $SCRIPTPATH/config/server.conf /u01/prd/streaming/cfg/server.conf
+sudo cp $SCRIPTPATH/config/dhcpcd.conf /etc/dhcpcd.conf
 sudo cp $SCRIPTPATH/config/icecast2 /etc/default/
 sudo cp $SCRIPTPATH/config/streaming-vu-meter.desktop /usr/share/applications/streaming-vu-meter.desktop
 sudo cp $SCRIPTPATH/config/alsastate.desktop /usr/share/applications/alsastate.desktop
@@ -311,6 +312,7 @@ sudo hamachi do-join "$hamachi_id" "$pi_passwd"
 
 echo
 echo "Setting up Static IP address"
+
 if [[ "$DEV" = "FALSE" ]]; then
 dhcpcd="
 interface eth0
