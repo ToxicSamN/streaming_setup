@@ -172,7 +172,7 @@ echo "Configuring Icecast2.xml"
 echo
 echo "Configuring Darkice.conf"
 sudo sed -i.bak 's/mountPoint.*=.*XXXX.*/mountPoint = '"$StreamMP"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
-sudo sed -i 's/Port.*=.*9999.*/Port = '"$_port"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
+sudo sed -i 's/port.*=.*9999.*/port = '"$_port"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
 sudo sed -i 's/name.*=.*XXXX Broadcast.*/name = '"$StreamName"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
 sudo sed -i 's/description.*=.*XXXX Radio.*/description = '"$StreamDescription"'/' /u01/prd/streaming/cfg/darkice/darkice.conf
 
