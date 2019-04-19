@@ -15,7 +15,7 @@ usage(){
 	h_desc="\t\tProvide usage information."
 	d_desc="DEV Only Paramter. Do Not Use Unless you Are Dev"
 	printf "Usage: \n  $0 [OPTIONS]\n\nOPTIONS:\n"
-	printf "  -s | --station-id\t\t$s_desc\n  -m | --master\t$m_desc\n  -d | --dev\t$d_desc\n  -h | --help\t$h_desc\n\n\n"
+	printf "  -s | --station-id\t$s_desc\n  -m | --master\t\t$m_desc\n  -d | --dev\t\t$d_desc\n  -h | --help\t$h_desc\n\n\n"
 	exit 
 }
 
