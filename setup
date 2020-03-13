@@ -363,6 +363,8 @@ elif [[ "$MASTER" = "TRUE" ]]; then
 fi
 
 echo
+# removing any firstboot files. This may return an error if the file doesn't exist
+sudo rm -f /boot/firstboot
 
 echo "Complete, rebooting.."
 sudo reboot
