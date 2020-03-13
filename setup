@@ -130,13 +130,21 @@ else
 fi
 sudo ex +"%s@DPkg@//DPkg" -cwq /etc/apt/apt.conf.d/70debconf
 export DEBIAN_FRONTEND=noninteractive
-export LANGUAGE=en_US.UTF-8
-export LANG=en_US.UTF-8
+
+sudo apt-get install -y locales
+echo "LC_ALL=en_US.UTF-8" | sudo tee --append /etc/environment
+echo "LANG=en_US.UTF-8" | sudo tee --append /etc/environment
+echo "LANGUAGE=en_US.UTF-8" | sudo tee --append /etc/environment
+echo "en_US.UTF-8 UTF-8" | sudo tee /etc/locale.gen
+echo "LANG=en_US.UTF-8" | sudo tee /etc/locale.conf
+sudo locale-gen en_US.UTF-8
 export LC_ALL=en_US.UTF-8
-locale-gen en_US.UTF-8
-dpkg-reconfigure locales
+export LANG=en_US.UTF-8
+# sudo dpkg-reconfigure locales
 sudo dpkg-reconfigure debconf -f noninteractive -p critical
 sudo dpkg --configure -a
+
+echo
 
 sudo apt-get remove --purge libreoffice* -y
 sudo apt-get purge wolfram-engine -y
@@ -153,7 +161,7 @@ sudo apt-get install -y mplayer vim # possibly using mpg321
 sudo apt-get install -y darkice mutt
 sudo apt-get install -y exfat-fuse exfat-utils rsync gdisk
 sudo apt-get install -y lsb lsb-core, htop
-sudo apt-get install -y icecast2
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y icecast2
 sudo apt install -y $SCRIPTPATH/software/teamviewer-host_14.1.9025_armhf.deb
 sudo apt install -y $SCRIPTPATH/software/logmein-hamachi_2.1.0.198-1_armhf.deb
 sudo apt-get clean -y
@@ -385,4 +393,5 @@ echo
 sudo rm -f /boot/firstboot
 
 echo "Complete, rebooting.."
+sudo reboot
 sudo reboot
