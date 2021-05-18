@@ -64,6 +64,7 @@ do
 	esac
 	shift
 done
+# force lowercase
 RID=${RID,,}
 if [[ "$RID" = "kgro" || "$RID" = "komx" || "$RID" = "kdrl" || "$MASTER" = "TRUE" || "$DEV" = "TRUE" ]]; then
 
